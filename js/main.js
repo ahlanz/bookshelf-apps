@@ -18,14 +18,19 @@ document.addEventListener('DOMContentLoaded',function(){
 
     const bookComplete = document.getElementById('completeBookshelfList');
     bookComplete.innerHTML = '';
-    
+
+
 
     for(bookItem of bookList){
         const bookElement = makeBooks(bookItem);
-        bookUncomplete.append(bookElement);
-        console.log('List book element');
-        console.log(bookElement);
+        if (!bookItem.isComplete) {
+            bookUncomplete.append(bookElement);
+        } else {
+            bookComplete.append(bookElement);
+            
+        }
     }
+    console.log(bookList);
 
     });
 
@@ -34,12 +39,14 @@ document.addEventListener('DOMContentLoaded',function(){
         const bookTitle = document.getElementById('inputBookTitle').value;
         const bookAuthor = document.getElementById('inputBookAuthor').value;
         const bookYear = document.getElementById('inputBookYear').value;
+        const isComplete = document.getElementById('inputBookIsComplete').checked;
 
         const generatedId = generateId();
-        const booksObject = generateBooksObject(generatedId,bookTitle,bookAuthor,bookYear,false);
+        const booksObject = generateBooksObject(generatedId,bookTitle,bookAuthor,bookYear,isComplete);
 
-        console.log(booksObject);
+        
         bookList.push(booksObject);
+        console.log(booksObject);
 
         document.dispatchEvent(new Event(RENDER_EVENT));
 
@@ -47,14 +54,15 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
     //Function untuk generate id
+    let idCounter = 0;
     function generateId(){
-        return + new Date();
+        return idCounter++;
     }
 
     //Function untuk generate object buku
-    function generateBooksObject(booksId,bookTitle,bookAuthor,bookYear,isComplete){
+    function generateBooksObject(id,bookTitle,bookAuthor,bookYear,isComplete){
         return {
-            booksId,
+            id,
             bookTitle,
             bookAuthor,
             bookYear,
@@ -71,17 +79,84 @@ document.addEventListener('DOMContentLoaded',function(){
         const inputBookYear = document.createElement('p');
         inputBookYear.innerText = booksObject.bookYear;
 
+        
 
-        //TODO sampe sini ya code nya !!!
         const article = document.createElement('article');
         article.classList.add('book_item');
-        article.append(inputBookTitle,inputBookAuthor,inputBookYear);
+        article.append(inputBookTitle,inputBookAuthor,inputBookYear,);
         article.setAttribute('id', `books-${booksObject.booksId}`);
 
+        // Todo buat container div untuk action
+        const actionContainer = document.createElement('div');
+        actionContainer.classList.add('action');
+        article.append(actionContainer);
+
+        // Todo buat button selesai dan button hapus
+        const buttonSelesai = document.createElement('button');
+        buttonSelesai.classList.add('green');
+        buttonSelesai.innerText = 'Selesai dibaca';
+        actionContainer.append(buttonSelesai);
+
+        const buttonHapus = document.createElement('button');
+        buttonHapus.classList.add('red');
+        buttonHapus.innerText = 'Hapus buku';
+        actionContainer.append(buttonHapus);
+
+
+        // Todo buat event untuk button selesai 
+        buttonSelesai.addEventListener('click', function(){
+            addBooksToComplete(booksObject.id);
+            console.log('button seelsai jalan');
+        });
+
+        buttonHapus.addEventListener('click',function(){
+            removeBooks(booksObject.id);
+            console.log('button hapus jalan');
+        });
+        
         return article;
     }
 
 
+
+    function addBooksToComplete(id){
+        const bookTarget = findBookId(id);
+        if (bookTarget === null) {
+            return console.log('ID nya masih null');
+        }
+
+        bookTarget.isComplete = true;
+        document.dispatchEvent(new Event(RENDER_EVENT));
+    }
+
+    function findBookId(id){
+        for(const bookItem of bookList){
+            if (bookItem.id === id) {
+                console.log('Found book with ID:', bookItem.id);
+                return bookItem;
+            }
+        }
+        return null;
+    }
+
+    function removeBooks(id){
+        const bookTarget = findBookIndex(id);
+        if (bookTarget === - 1) {
+            return console.log('item buku dihapus dengan id null');
+        }
+        bookList.splice(bookTarget,1);
+        console.log('item buku dihapus dengan id:', id);
+        document.dispatchEvent(new Event(RENDER_EVENT));
+    }
+
+    function findBookIndex(id){
+        for(const index in bookList){
+            if (bookList[index].id === id) {
+                return index;
+            }
+        }
+        return -1;
+    }
     
    
 
