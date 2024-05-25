@@ -11,6 +11,16 @@ document.addEventListener('DOMContentLoaded',function(){
         addBook();
     });
 
+    // form untuk search buku 
+    const searchForm = document.getElementById('searchBook');
+    searchForm.addEventListener('submit',function(event){
+        event.preventDefault();
+       searchBook();
+    });
+
+
+    let searchQuery = '';
+
 
     document.addEventListener(RENDER_EVENT, function(){
     const bookUncomplete = document.getElementById('incompleteBookshelfList');
@@ -22,6 +32,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
     for(bookItem of bookList){
+        if (searchQuery && !bookItem.bookTitle.toLowerCase().includes(searchQuery.toLowerCase())) {
+            continue;
+        }
+
         const bookElement = makeBooks(bookItem);
         if (!bookItem.isComplete) {
             bookUncomplete.append(bookElement);
@@ -41,15 +55,25 @@ document.addEventListener('DOMContentLoaded',function(){
         const bookYear = document.getElementById('inputBookYear').value;
         const isComplete = document.getElementById('inputBookIsComplete').checked;
 
+        //convet bookyear ke int
+        const bookYearInt = parseInt(bookYear);
+
         const generatedId = generateId();
-        const booksObject = generateBooksObject(generatedId,bookTitle,bookAuthor,bookYear,isComplete);
+        const booksObject = generateBooksObject(generatedId,bookTitle,bookAuthor,bookYearInt,isComplete);
 
         
         bookList.push(booksObject);
         console.log(booksObject);
 
         document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
 
+    }
+
+
+    function searchBook() {
+        searchQuery = document.getElementById('searchBookTitle').value;
+        document.dispatchEvent(new Event(RENDER_EVENT));
     }
 
 
@@ -60,13 +84,13 @@ document.addEventListener('DOMContentLoaded',function(){
     }
 
     //Function untuk generate object buku
-    function generateBooksObject(id,bookTitle,bookAuthor,bookYear,isComplete){
+    function generateBooksObject(id,bookTitle,author,bookYearInt,isComplete){
         return {
-            id,
-            bookTitle,
-            bookAuthor,
-            bookYear,
-            isComplete,
+            id : id,
+            bookTitle : bookTitle,
+            author : author,
+            bookYear : bookYearInt,
+            isComplete : isComplete,
         }
     }
 
@@ -75,9 +99,9 @@ document.addEventListener('DOMContentLoaded',function(){
         const inputBookTitle = document.createElement('h3');
         inputBookTitle.innerText = booksObject.bookTitle;
         const inputBookAuthor = document.createElement('p');
-        inputBookAuthor.innerText = booksObject.bookAuthor;
+        inputBookAuthor.innerText = booksObject.author;
         const inputBookYear = document.createElement('p');
-        inputBookYear.innerText = booksObject.bookYear;
+        inputBookYear.innerText = parseInt(booksObject.bookYear);
 
         
 
@@ -94,7 +118,7 @@ document.addEventListener('DOMContentLoaded',function(){
         // Todo buat button selesai dan button hapus
         const buttonSelesai = document.createElement('button');
         buttonSelesai.classList.add('green');
-        buttonSelesai.innerText = 'Selesai dibaca';
+        buttonSelesai.innerText = booksObject.isComplete  ? 'Belum selesai dibaca' : 'Selesai dibaca';
         actionContainer.append(buttonSelesai);
 
         const buttonHapus = document.createElement('button');
@@ -105,8 +129,11 @@ document.addEventListener('DOMContentLoaded',function(){
 
         // Todo buat event untuk button selesai 
         buttonSelesai.addEventListener('click', function(){
-            addBooksToComplete(booksObject.id);
-            console.log('button seelsai jalan');
+            if (booksObject.isComplete) {
+                undoBukuBelumSelesai(booksObject.id);
+            } else {
+                addBooksToComplete(booksObject.id);
+            }
         });
 
         buttonHapus.addEventListener('click',function(){
@@ -127,6 +154,18 @@ document.addEventListener('DOMContentLoaded',function(){
 
         bookTarget.isComplete = true;
         document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
+    }
+
+    function undoBukuBelumSelesai(id){
+        const bookTarget = findBookId(id);
+        if (bookTarget === null) {
+            return console.log('ID nya masih null');
+        }
+
+        bookTarget.isComplete = false;
+        document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
     }
 
     function findBookId(id){
@@ -147,6 +186,7 @@ document.addEventListener('DOMContentLoaded',function(){
         bookList.splice(bookTarget,1);
         console.log('item buku dihapus dengan id:', id);
         document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
     }
 
     function findBookIndex(id){
@@ -157,7 +197,47 @@ document.addEventListener('DOMContentLoaded',function(){
         }
         return -1;
     }
-    
-   
+
+    //Todo buat insialisasi local storage
+    const SAVED_EVENT = 'saved-books';
+    const SOTRAGE_KEY = 'bookshelf_apps';
+
+    //TODO function jika storage tidak mendukung di web browser
+    function ifStorageExist(){
+        if (typeof(Storage) === undefined) {
+            alert('Broweser tidak mendukung storage');
+            return false;
+        }
+        return true;
+    }
+
+    function saveData(){
+        if(ifStorageExist()){
+            const parseJson = JSON.stringify(bookList);
+            localStorage.setItem(SOTRAGE_KEY, parseJson);
+            document.dispatchEvent(new Event(SAVED_EVENT));
+        }
+    }
+
+    document.addEventListener(SAVED_EVENT, function(){
+        localStorage.getItem(SOTRAGE_KEY);
+        console.log('data berhasil masuk ke local storage');
+    });
+
+    function loadDataFromStorage(){
+       const serilazedData = localStorage.getItem(SOTRAGE_KEY);
+       let data = JSON.parse(serilazedData);
+
+       if (data !== null) {
+           for(dataBook of data){
+            bookList.push(dataBook);
+           }
+       }
+       document.dispatchEvent(new Event(RENDER_EVENT));
+    }
+
+    if (ifStorageExist()) {
+        loadDataFromStorage();
+    }
 
 });
