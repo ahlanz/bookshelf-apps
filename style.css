@@ -1,3 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
 * {
     padding: 0;
     margin: 0;
@@ -5,20 +9,31 @@
 }
 
 body, input, button {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 input, button {
     font-size: 16px;
 }
 
+.background-image{
+    background-image: url('https://i.pinimg.com/736x/20/04/17/200417f459675015bf788228ba5a8e45.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .head_bar {
-    padding: 12px;
+    padding: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: cornflowerblue;
-    color: white;
+    background-color: rgb(142, 122, 181);
+    color: #FFFFFF;
 }
 
 main {
@@ -26,20 +41,25 @@ main {
     width: 80%;
     margin: 0 auto;
     padding: 16px;
+}
 
+.input{
+    border: none;
 }
 
 .input_section {
     display: flex;
     flex-direction: column;
     padding: 16px;
-    border: 1px solid black;
     border-radius: 10px;
+    background-color: rgba(183, 132, 183, 0.4);
+    color: white;
+    border: none;
 }
 
 .input_section > h2 {
     text-align: center;
-    color: cornflowerblue;
+    color: white;
 }
 
 .input_section > form > .input {
@@ -47,7 +67,7 @@ main {
 }
 
 .input_section > form > button {
-    background-color: cornflowerblue;
+    background-color: #8E7AB5;
     color: white;
     border: 0;
     border-radius: 5px;
@@ -70,7 +90,7 @@ main {
 
 
 .input_section > form > .input > label {
-    color: cornflowerblue;
+    color: white;
     font-weight: bold;
 }
 
@@ -81,7 +101,7 @@ main {
 }
 
 .input_section > form > .input_inline > label {
-    color: cornflowerblue;
+    color: white;
     font-weight: bold;
     margin-right: 10px;
 }
@@ -92,12 +112,12 @@ main {
     flex-direction: column;
     align-items: center;
     padding: 16px;
-    border: 1px solid black;
     border-radius: 10px;
+    background-color: rgba(183, 132, 183, 0.4);
 }
 
 .search_section > h2 {
-    color: cornflowerblue;
+    color: white;
 }
 
 .search_section > form {
@@ -119,7 +139,7 @@ main {
 }
 
 .search_section > form > button {
-    background-color: cornflowerblue;
+    background-color: #8E7AB5;
     color: white;
     border: 0;
     border-radius: 5px;
@@ -128,13 +148,13 @@ main {
 
 .book_shelf {
     margin: 16px 0 0 0;
-    border: 1px solid black;
     padding: 16px;
     border-radius: 10px;
+    background-color: rgba(183, 132, 183, 0.4);
 }
 
 .book_shelf > h2 {
-    color: cornflowerblue;
+    color: white;
 }
 
 .book_shelf > .book_list {
@@ -143,9 +163,11 @@ main {
 
 .book_shelf > .book_list > .book_item {
     padding: 8px 16px 16px 16px;
-    border: 1px solid black;
     border-radius: 5px;
     margin: 10px 0;
+    color: white;
+    background-color: #8E7AB5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
 }
 
 .book_shelf > .book_list > .book_item > h3, p {
@@ -167,5 +189,9 @@ main {
 
 .book_shelf > .book_list > .book_item > .action > .red {
     background-color: darkred;
+    color: white;
+}
+
+label {
     color: white;
 }
